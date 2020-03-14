@@ -104,6 +104,17 @@
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
+		
+		<dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.45</version>
+        </dependency>
+        <dependency>
+			<groupId>cn.miludeer</groupId>
+			<artifactId>jsoncode</artifactId>
+			<version>1.2.4</version>
+		</dependency>
 
 
 		<!-- java.lang.ClassNotFoundException: javax.xml.bind.DatatypeConverter java11需要 java8不需要-->
