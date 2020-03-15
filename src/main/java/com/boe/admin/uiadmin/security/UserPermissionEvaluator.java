@@ -1,17 +1,16 @@
 package com.boe.admin.uiadmin.security;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.boe.admin.uiadmin.po.PermissionPo;
-import com.boe.admin.uiadmin.service.UserService;
+import com.boe.admin.uiadmin.utils.CacheUtil;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
 
 
 /**
@@ -20,9 +19,8 @@ import com.boe.admin.uiadmin.service.UserService;
  */
 @Component
 public class UserPermissionEvaluator implements PermissionEvaluator {
-    @Autowired
-    private UserService userService;
-    
+
+	
     
     /**
      * hasPermission鉴权方法
@@ -38,14 +36,23 @@ public class UserPermissionEvaluator implements PermissionEvaluator {
         // 获取用户信息
     	User user =(User) authentication.getPrincipal();
         // 查询用户权限(这里可以将权限放入缓存中提升效率)
-    	// 如果用户的角色改变了,或者角色的权限改变了,要刷新缓冲 为了支持权限的注解
+    	// 如果用户的角色改变了,或者角色的权限改变了,要刷新缓冲 为了支持权限的注解,角色的注解,用户所有的角色在登录的时候已近注入了
     	// 如果用户的角色变了,刷新用户的权限缓冲,用户的key -- userId
     	// 如果角色的权限变了,刷新所有的缓冲,所有用户的权限都变了, 和某一个key -- userId无关了
-        Set<String> permissions = new HashSet<>();
-        List<PermissionPo> permissionPoList = userService.selectPermissionsByUserId(user.getId());
-        for (PermissionPo per :permissionPoList) {
-            permissions.add(per.getUrl());
-        }
+		//        Set<String> permissions = new HashSet<>();
+		//        List<PermissionPo> permissionPoList = userService.selectPermissionsByUserId(user.getId());
+		//        for (PermissionPo per :permissionPoList) {
+		//            permissions.add(per.getUrl());
+		//        }
+    	
+    	LoadingCache<Long,Set<String>> useridAllpermission = CacheUtil.USERID_ALLPERMISSION;
+    	Set<String> permissions;
+		try {
+			permissions = useridAllpermission.get(user.getId());
+		} catch (ExecutionException e) {
+			permissions = Sets.newHashSet();
+		}
+    	
         // 权限对比
         if (permissions.contains(permission.toString())){
             return true;

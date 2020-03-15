@@ -18,6 +18,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
 	
 	@Autowired
 	private UserMapper userMapper;
+	
 
 	
     public List<PermissionPo> selectPermissionsByUserId(Long userId) {

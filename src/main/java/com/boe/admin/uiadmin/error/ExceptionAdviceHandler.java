@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.boe.admin.uiadmin.common.Result;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
@@ -51,6 +52,20 @@ public class ExceptionAdviceHandler {
 		
 		return Result.of(null, "没有访问权限", 401);
 	}
+	
+	
+	
+	
+	@ExceptionHandler(ExpiredJwtException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public Result<Object> ExpiredJwtException(HttpServletRequest request, ExpiredJwtException e) {
+		log.error("###################>>>>>>>: ExpiredJwtException -- {}", ExceptionUtils.getMessage(e));
+		
+		return Result.of(null, "token过期", 401);
+	}
+	
+	
 	
 	
 

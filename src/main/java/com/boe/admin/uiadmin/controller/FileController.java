@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FileController {
 	
 	@GetMapping("ddd")
-	//@PreAuthorize("hasRole('aaa')")
+	@PreAuthorize("hasPermission('/aaa/ddd','/aaa/ddd')")
 	public Result<Object> ddd(){
 		return Result.of(null, "ok", 200);
 	}
