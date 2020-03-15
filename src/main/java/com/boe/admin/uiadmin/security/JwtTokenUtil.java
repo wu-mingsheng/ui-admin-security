@@ -1,14 +1,13 @@
 package com.boe.admin.uiadmin.security;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
-
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.boe.admin.uiadmin.common.Constant;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,18 +17,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
  * JWT 工具类
  */
 @Component
-public class JwtTokenUtil implements Serializable {
+public class JwtTokenUtil{
 
     //private static final String CLAIM_KEY_USERNAME = "sub";
 
     /**
      * 5天(毫秒)
      */
-    private static final long EXPIRATION_TIME = 432000000;
+    //private static final long EXPIRATION_TIME = 432000000;
     /**
      * JWT密码
      */
-    private static final String SECRET = "secret";
+    //private static final String SECRET = "secret";
 
 
     /**
@@ -47,9 +46,9 @@ public class JwtTokenUtil implements Serializable {
 	                // 自定义属性 放入用户拥有权限
 	                .claim("authorities", JSON.toJSONString(userDetails.getAuthorities()))
 	                // 失效时间
-	                .setExpiration(new Date(Instant.now().toEpochMilli() + EXPIRATION_TIME))
+	                .setExpiration(new Date(Instant.now().toEpochMilli() + Constant.TOKEN_EXPIRE_TIME))
 	                // 签名算法和密钥
-	                .signWith(SignatureAlgorithm.HS512, SECRET)
+	                .signWith(SignatureAlgorithm.HS512, Constant.TOKEN_SECRET)
 	                .compact();
 	       
 	       
@@ -95,7 +94,7 @@ public class JwtTokenUtil implements Serializable {
      */
     private Claims getClaimsFromToken(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey( SECRET )
+                .setSigningKey( Constant.TOKEN_SECRET )
                 .parseClaimsJws( token )
                 .getBody();
         return claims;
