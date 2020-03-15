@@ -1,12 +1,19 @@
 package com.boe.admin.uiadmin.error;
 
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -44,6 +51,48 @@ public class ExceptionAdviceHandler {
 		
 		return Result.of(null, "没有访问权限", 401);
 	}
+	
+	
+
+    /**
+    * 校验数据的处理
+    */
+   @ExceptionHandler(value = MethodArgumentNotValidException.class)
+   @ResponseStatus(HttpStatus.BAD_REQUEST)
+   @ResponseBody
+   public Object methodArgumentNotValidException(MethodArgumentNotValidException e) {
+       log.info("{}", ExceptionUtils.getStackTrace(e));
+       String msg = e.getBindingResult().getFieldError().getDefaultMessage();
+       return Result.of(null, "请求参数有误: " + msg, 400);
+   }
+   
+   /**
+    * 缺失请求参数
+    */
+   @ExceptionHandler(value = MissingServletRequestParameterException.class)
+   @ResponseStatus(HttpStatus.BAD_REQUEST)
+   @ResponseBody
+   public Object missingServletRequestParameterException(MissingServletRequestParameterException e) {
+       
+	   return Result.of(null, "请求参数有误", 400);
+   }
+   /**
+    * 参数校验错误
+    */
+   @ExceptionHandler(value = ConstraintViolationException.class)
+   @ResponseStatus(HttpStatus.BAD_REQUEST)
+   @ResponseBody
+   public Object constraintViolationException(ConstraintViolationException e) {
+       
+       Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+       for (ConstraintViolation<?> item : violations) {
+           String message = ((PathImpl) item.getPropertyPath()).getLeafNode().getName()+ ":" + item.getMessage();
+           return Result.of(null, "请求参数有误: " + message, 400);
+       }
+ 
+       
+       return Result.of(null, "请求参数有误: " + e.getMessage(), 400);
+   }
 	
 	
 

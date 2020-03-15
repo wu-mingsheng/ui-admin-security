@@ -19,16 +19,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenUtil{
 
-    //private static final String CLAIM_KEY_USERNAME = "sub";
-
-    /**
-     * 5天(毫秒)
-     */
-    //private static final long EXPIRATION_TIME = 432000000;
-    /**
-     * JWT密码
-     */
-    //private static final String SECRET = "secret";
+  
 
 
     /**

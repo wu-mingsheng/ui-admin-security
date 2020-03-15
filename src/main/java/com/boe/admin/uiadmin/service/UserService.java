@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boe.admin.uiadmin.dao.UserMapper;
 import com.boe.admin.uiadmin.po.PermissionPo;
+import com.boe.admin.uiadmin.po.RolePo;
 import com.boe.admin.uiadmin.po.UserPo;
 
 
@@ -22,6 +23,11 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
     public List<PermissionPo> selectPermissionsByUserId(Long userId) {
     	
         return userMapper.selectPermissionsByUserId(userId);
+    }
+    
+    public List<RolePo> selectRolesByUserId(Long userId) {
+    	
+        return userMapper.selectRolesByUserId(userId);
     }
 
 }

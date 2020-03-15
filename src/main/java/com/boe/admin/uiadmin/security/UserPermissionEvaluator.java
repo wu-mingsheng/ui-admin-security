@@ -22,6 +22,8 @@ import com.boe.admin.uiadmin.service.UserService;
 public class UserPermissionEvaluator implements PermissionEvaluator {
     @Autowired
     private UserService userService;
+    
+    
     /**
      * hasPermission鉴权方法
      * 这里仅仅判断PreAuthorize注解中的权限表达式
@@ -36,6 +38,9 @@ public class UserPermissionEvaluator implements PermissionEvaluator {
         // 获取用户信息
     	User user =(User) authentication.getPrincipal();
         // 查询用户权限(这里可以将权限放入缓存中提升效率)
+    	// 如果用户的角色改变了,或者角色的权限改变了,要刷新缓冲 为了支持权限的注解
+    	// 如果用户的角色变了,刷新用户的权限缓冲,用户的key -- userId
+    	// 如果角色的权限变了,刷新所有的缓冲,所有用户的权限都变了, 和某一个key -- userId无关了
         Set<String> permissions = new HashSet<>();
         List<PermissionPo> permissionPoList = userService.selectPermissionsByUserId(user.getId());
         for (PermissionPo per :permissionPoList) {

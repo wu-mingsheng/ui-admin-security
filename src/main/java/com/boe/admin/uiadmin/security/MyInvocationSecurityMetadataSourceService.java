@@ -47,6 +47,13 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 
 	/**
 	 * 每一个资源所需要的角色 Collection<ConfigAttribute>决策器会用到
+	 * 定义的缓冲 : 访问路径(url=>也就是权限),需要那些角色,
+	 * 这个是脱离注解数据库单独存在的吗?
+	 * 和注解没关系,为了支持数据库配置的
+	 * 默认每一个url都需要那些role,如果当前用户没有这个role,即使没有注解说明要这个role,也是不允许访问的
+	 * 如果设置了role-permission的关系,要刷新缓冲
+	 * url-roles 如果添加了新的url-roles, 要添加新的key
+	 * 如果修改了原来的url-roles关系,刷新这个key,也就是url
 	 */
 	private static HashMap<String, Collection<ConfigAttribute>> map = null;
 
