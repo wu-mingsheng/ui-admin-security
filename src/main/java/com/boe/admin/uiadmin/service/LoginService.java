@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.boe.admin.uiadmin.security.JwtTokenUtil;
 
 @Service
-public class AuthService {
+public class LoginService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -24,10 +24,12 @@ public class AuthService {
     private JwtTokenUtil jwtTokenUtil;
 
 
-    
-    public String login(String username, String password) {
-        UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken( username, password );
-        Authentication authentication = authenticationManager.authenticate(upToken);
+    /**
+     * {@link com.boe.admin.uiadmin.security.MyUserDetailsService #loadUserByUsername}
+     */
+    public String login(String username, String password) throws Exception {
+        UsernamePasswordAuthenticationToken usernamePasswordToken = new UsernamePasswordAuthenticationToken( username, password );
+        Authentication authentication = authenticationManager.authenticate(usernamePasswordToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = userDetailsService.loadUserByUsername( username );
         String token = jwtTokenUtil.generateToken(userDetails);

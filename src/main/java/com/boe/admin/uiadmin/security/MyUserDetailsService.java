@@ -60,7 +60,6 @@ public class MyUserDetailsService implements UserDetailsService {
 			Role role = new Role();
 			role.setId(rolePo.getId());
 			role.setName(rolePo.getName());
-
 			roleList.add(role);
 		}
 		

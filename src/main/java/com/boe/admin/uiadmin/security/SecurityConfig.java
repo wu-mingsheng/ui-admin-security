@@ -6,13 +6,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.DigestUtils;
+
+
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableWebSecurity
 @Slf4j
+@EnableGlobalMethodSecurity(prePostEnabled = true) //开启权限注解,默认是关闭的
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -61,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// OPTIONS请求全部放行
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				// 登录接口放行
-				.antMatchers("/auth/login").permitAll()
+				.antMatchers("/user/login").permitAll()
 				// 其他接口全部验证
 				.anyRequest().authenticated();
 
@@ -81,5 +86,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
+	
+    /**
+     * 注入自定义PermissionEvaluator
+     */
+    @Bean
+    public DefaultWebSecurityExpressionHandler userSecurityExpressionHandler(){
+        DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+        handler.setPermissionEvaluator(new UserPermissionEvaluator());
+        return handler;
+    }
 
 }

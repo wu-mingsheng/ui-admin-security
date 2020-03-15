@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boe.admin.uiadmin.dao.UserMapper">
+	
+	<!-- 查询用户的所有权限 -->
+	<select id="selectPermissionsByUserId" resultType="com.boe.admin.uiadmin.po.PermissionPo" parameterType="long">
+		SELECT DISTINCT p.* FROM user_role ur
+			LEFT JOIN role_permission rp ON ur.role_id = rp.role_id
+			LEFT JOIN permission p ON rp.permission_id = p.id
+		WHERE ur.user_id = #{userId}
+	</select>
+
+
+
+
+</mapper>

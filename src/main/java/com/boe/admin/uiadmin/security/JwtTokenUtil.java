@@ -3,11 +3,12 @@ package com.boe.admin.uiadmin.security;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,7 +20,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    private static final String CLAIM_KEY_USERNAME = "sub";
+    //private static final String CLAIM_KEY_USERNAME = "sub";
 
     /**
      * 5天(毫秒)
@@ -35,14 +36,24 @@ public class JwtTokenUtil implements Serializable {
      * 签发JWT
      */
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>(16);
-        claims.put( CLAIM_KEY_USERNAME, userDetails.getUsername() );
+    	 // 登陆成功生成JWT
+	       return  Jwts.builder()
+	                // 主题
+	                .setSubject(userDetails.getUsername())
+	                // 签发时间
+	                .setIssuedAt(new Date())
+	                // 签发者
+	                .setIssuer("wms")
+	                // 自定义属性 放入用户拥有权限
+	                .claim("authorities", JSON.toJSONString(userDetails.getAuthorities()))
+	                // 失效时间
+	                .setExpiration(new Date(Instant.now().toEpochMilli() + EXPIRATION_TIME))
+	                // 签名算法和密钥
+	                .signWith(SignatureAlgorithm.HS512, SECRET)
+	                .compact();
+	       
+	       
 
-        return Jwts.builder()
-                .setClaims( claims )
-                .setExpiration( new Date( Instant.now().toEpochMilli() + EXPIRATION_TIME  ) )
-                .signWith( SignatureAlgorithm.HS512, SECRET )
-                .compact();
     }
 
     /**
