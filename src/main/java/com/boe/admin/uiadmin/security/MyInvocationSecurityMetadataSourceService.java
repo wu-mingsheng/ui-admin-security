@@ -1,23 +1,19 @@
 package com.boe.admin.uiadmin.security;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
-import org.springframework.security.access.SecurityConfig;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.boe.admin.uiadmin.dao.PermissionMapper;
@@ -38,6 +34,7 @@ import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,39 +60,55 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 	 * url-roles 如果添加了新的url-roles, 要添加新的key
 	 * 如果修改了原来的url-roles关系,刷新这个key,也就是url
 	 */
-	//private static HashMap<String, Collection<ConfigAttribute>> map = null;
-	//URL_ROLES_CACHE.invalidateAll();
-	public static final Cache<String, Map<String, Collection<ConfigAttribute>>> URL_ROLES_CACHE = CacheBuilder.newBuilder().build();
+	public static final Cache<String, Collection<ConfigAttribute>> URI_ROLES_CACHE = CacheBuilder.newBuilder().build();
 
 	/**
-	 * 返回请求的资源需要的角色
+	 * 返回请求的资源需要的角色,每次请求的时候会调用
 	 */
 	@Override
 	public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-		
-		Map<String, Collection<ConfigAttribute>> map = null;
-
-		try {
-			map = URL_ROLES_CACHE.get("user_roles_cache", this::loadResourceDefine);
-		} catch (ExecutionException e) {
-			log.error("查询全局url-roles对照表错误: {}", ExceptionUtils.getMessage(e));	
-		}
-
-		// object 中包含用户请求的request 信息
 		HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
-		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
-			String url = it.next();
-			if (new AntPathRequestMatcher(url).matches(request)) {
-				return map.get(url);
-			}
+		String uri = request.getRequestURI();
+		log.info("==== request uri : [{}]", uri);
+		try {
+			URI_ROLES_CACHE.get(uri, () -> {
+				Set<ConfigAttribute> roles = Sets.newHashSet();
+				LambdaQueryWrapper<PermissionPo> uriQuery = Wrappers.lambdaQuery();
+				uriQuery.eq(PermissionPo::getUrl, uri);
+				PermissionPo permissionPo = permissionMapper.selectOne(uriQuery);
+				if(null == permissionPo) {
+					return roles;
+				}
+				Long permissionId = permissionPo.getId();
+				LambdaQueryWrapper<RolePermissionPo> permissionIdQuery= Wrappers.lambdaQuery();
+				permissionIdQuery.eq(RolePermissionPo::getPermissionId, permissionId);
+				List<RolePermissionPo> rolePermissionList = rolePermissionMapper.selectList(permissionIdQuery);
+				
+				for (RolePermissionPo rolePermissionPo : rolePermissionList) {
+					Long roleId = rolePermissionPo.getRoleId();
+					RolePo rolePo = roleMapper.selectById(roleId);
+					String roleName = rolePo.getName();
+					ConfigAttribute role = new SecurityConfig(roleName);
+					roles.add(role);
+				}
+				
+				return roles;
+			});
+		} catch (Exception e) {
+			log.error("获取用户请求uri对应的role失败, 默认启用请求放行: {}", ExceptionUtils.getMessage(e));
 		}
-
+		
+		
 		return null;
+
 	}
 
+	
+	/**
+	 * 方法如果返回了所有定义的权限资源，Spring Security会在启动时校验每个ConfigAttribute是否配置正确，不需要校验直接返回null
+	 */
 	@Override
 	public Collection<ConfigAttribute> getAllConfigAttributes() {
-		loadResourceDefine();
         return null;
 	}
 
@@ -104,36 +117,6 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 		return true;
 	}
 
-	/**
-	 * 初始化 所有资源 对应的角色
-	 */
-	public Map<String, Collection<ConfigAttribute>> loadResourceDefine() {
-		Map<String, Collection<ConfigAttribute>> map = new HashMap<>(16);
-		// 权限资源 和 角色对应的表 也就是 角色权限 中间表
 
-		List<PermissionPo> permissionList = permissionMapper.selectList(null);
-		// 某个资源 可以被哪些角色访问
-		for (PermissionPo permissionPo : permissionList) {// 所有的权限
-			List<ConfigAttribute> roles = new ArrayList<>();
-
-			Long permissionId = permissionPo.getId();
-			LambdaQueryWrapper<RolePermissionPo> rolePermissionQuery = Wrappers.lambdaQuery();
-			rolePermissionQuery.eq(RolePermissionPo::getPermissionId, permissionId);
-			List<RolePermissionPo> rolePermissionList = rolePermissionMapper.selectList(rolePermissionQuery);
-			for (RolePermissionPo rolePermissionPo : rolePermissionList) {
-				Long roleId = rolePermissionPo.getRoleId();
-				RolePo rolePo = roleMapper.selectById(roleId);
-				String roleName = rolePo.getName();
-				ConfigAttribute role = new SecurityConfig(roleName);
-				roles.add(role);
-			}
-
-			String url = permissionPo.getUrl();
-			map.put(url, roles);
-
-		}
-		
-		return map;
-	}
 
 }
