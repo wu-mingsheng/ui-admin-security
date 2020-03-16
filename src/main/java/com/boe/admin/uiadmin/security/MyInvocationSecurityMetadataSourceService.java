@@ -5,9 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
@@ -33,8 +36,13 @@ import com.boe.admin.uiadmin.dao.RolePermissionMapper;
 import com.boe.admin.uiadmin.po.PermissionPo;
 import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class MyInvocationSecurityMetadataSourceService implements FilterInvocationSecurityMetadataSource {
 
 	@Autowired
@@ -55,16 +63,24 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 	 * url-roles 如果添加了新的url-roles, 要添加新的key
 	 * 如果修改了原来的url-roles关系,刷新这个key,也就是url
 	 */
-	private static HashMap<String, Collection<ConfigAttribute>> map = null;
+	//private static HashMap<String, Collection<ConfigAttribute>> map = null;
+	//URL_ROLES_CACHE.invalidateAll();
+	public static final Cache<String, Map<String, Collection<ConfigAttribute>>> URL_ROLES_CACHE = CacheBuilder.newBuilder().build();
 
 	/**
 	 * 返回请求的资源需要的角色
 	 */
 	@Override
 	public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-		if (null == map) {
-			loadResourceDefine();
+		
+		Map<String, Collection<ConfigAttribute>> map = null;
+
+		try {
+			map = URL_ROLES_CACHE.get("user_roles_cache", this::loadResourceDefine);
+		} catch (ExecutionException e) {
+			log.error("查询全局url-roles对照表错误: {}", ExceptionUtils.getMessage(e));	
 		}
+
 		// object 中包含用户请求的request 信息
 		HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
 		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) {
@@ -91,8 +107,8 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 	/**
 	 * 初始化 所有资源 对应的角色
 	 */
-	public void loadResourceDefine() {
-		map = new HashMap<>(16);
+	public Map<String, Collection<ConfigAttribute>> loadResourceDefine() {
+		Map<String, Collection<ConfigAttribute>> map = new HashMap<>(16);
 		// 权限资源 和 角色对应的表 也就是 角色权限 中间表
 
 		List<PermissionPo> permissionList = permissionMapper.selectList(null);
@@ -116,6 +132,8 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 			map.put(url, roles);
 
 		}
+		
+		return map;
 	}
 
 }

@@ -42,6 +42,8 @@ public class LoginService {
     
     @Autowired
     private UserService userService;
+    
+   
 
 
     /**
@@ -72,7 +74,6 @@ public class LoginService {
         
         LambdaQueryWrapper<UserPo> usernameQuery = Wrappers.<UserPo>lambdaQuery().eq(UserPo::getUsername, username);
         UserPo userPo = userService.getOne(usernameQuery, false);
-        
         
         
         if (userPo == null) {
