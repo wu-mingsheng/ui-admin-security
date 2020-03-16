@@ -38,7 +38,6 @@ public class FileController {
 	
 	
 	@PostMapping("/upload")
-	@PreAuthorize("hasRole('ADMIN')")
 	public Result<Object> singleFileUpload(@RequestParam("file") MultipartFile file) {
 		 if (file.isEmpty()) {
 			 return Result.of(null, "上传失败，请选择文件", 400);
@@ -82,7 +81,6 @@ public class FileController {
 	}
 	
 	@PostMapping("submitPostForm")
-	@PreAuthorize("hasRole('ADMIN')")
 	public Result<Object> submitPostForm(HttpServletRequest request) throws Exception {
 		String body = request.getReader().lines().collect(Collectors.joining()); 
 		log.info("=== requestbody is : [{}]", body);

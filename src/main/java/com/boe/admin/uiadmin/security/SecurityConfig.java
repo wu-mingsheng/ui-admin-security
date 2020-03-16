@@ -15,8 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.DigestUtils;
-
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,11 +57,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		});
 
 	}
+	
+	
+	/**跨域问题*/
+	/**
+	 * 跨域过滤器最先执行
+	 * 这里定义的过滤器第二执行
+	 * security过滤器最后执行
+	 *
+	 */
+	@Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+    }
+
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.csrf().disable()
+			http.cors().and().csrf().disable()
 				// 因为使用JWT，所以不需要HttpSession
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				// OPTIONS请求全部放行
@@ -96,5 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         handler.setPermissionEvaluator(new UserPermissionEvaluator());
         return handler;
     }
+    
+
 
 }
