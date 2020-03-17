@@ -21,11 +21,11 @@
   <cache
       name = "userCache"
       eternal = "false"
-      maxElementsInMemory = "100"
+      maxElementsInMemory = "10000"
       overflowToDisk = "false"
       diskPersistent = "false"
-      timeToIdleSeconds = "120"
-      timeToLiveSeconds = "180"
+      timeToIdleSeconds = "3600"
+      timeToLiveSeconds = "3600"
       memoryStoreEvictionPolicy = "LRU"/>
 
   <!-- maxElementsInMemory 内存中最大缓存对象数，看着自己的heap大小来搞 -->

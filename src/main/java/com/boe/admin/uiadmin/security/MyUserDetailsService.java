@@ -3,6 +3,8 @@ package com.boe.admin.uiadmin.security;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
+@CacheConfig(cacheNames = {"userCache"})
 public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
@@ -36,11 +39,13 @@ public class MyUserDetailsService implements UserDetailsService {
 	private UserRoleMapper userRoleMapper;
 
 	@Override
-	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-		log.info("=== [username:{}]", userName);
+	//unless = "#result == null || #result.size() <= 0"
+	@Cacheable(key="#username",  unless="#result == null")
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		log.info("=== [username:{}]", username);
 		// 查数据库
 		LambdaQueryWrapper<UserPo> userQuery = Wrappers.lambdaQuery();
-		userQuery.eq(UserPo::getUsername, userName);
+		userQuery.eq(UserPo::getUsername, username);
 		UserPo userPo = userMapper.selectOne(userQuery);
 
 		if (null == userPo) {

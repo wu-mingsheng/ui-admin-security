@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.boe.admin.uiadmin.common.Result;
 
@@ -27,9 +28,18 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 @Slf4j
 public class ExceptionAdviceHandler {
+	
+	
+	@ExceptionHandler(value = {NoHandlerFoundException.class})
+	@ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Result<Object> noHandlerFoundException(HttpServletRequest req, Exception e) {
+		log.error("##################### >>>>>>>>> : NoHandlerFoundException -- {}", ExceptionUtils.getMessage(e));
+		return Result.of(null, "接口不存在", 404);
+    }
 
 	@ExceptionHandler(InternalAuthenticationServiceException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public Result<Object> InternalAuthenticationServiceException(HttpServletRequest request, InternalAuthenticationServiceException e) {
 		log.error("###################>>>>>>>: InternalAuthenticationServiceException -- {}", ExceptionUtils.getMessage(e));
@@ -37,7 +47,7 @@ public class ExceptionAdviceHandler {
 		return Result.of(null, "用户名错误", 401);
 	}
 	@ExceptionHandler(BadCredentialsException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public Result<Object> BadCredentialsException(HttpServletRequest request, BadCredentialsException e) {
 		log.error("###################>>>>>>>: BadCredentialsException -- {}", ExceptionUtils.getMessage(e));
@@ -45,7 +55,7 @@ public class ExceptionAdviceHandler {
 		return Result.of(null, "密码错误", 401);
 	}
 	@ExceptionHandler(AccessDeniedException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public Result<Object> AccessDeniedException(HttpServletRequest request, AccessDeniedException e) {
 		log.error("###################>>>>>>>: AccessDeniedException -- {}", ExceptionUtils.getMessage(e));
@@ -57,7 +67,7 @@ public class ExceptionAdviceHandler {
 	
 	
 	@ExceptionHandler(ExpiredJwtException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public Result<Object> ExpiredJwtException(HttpServletRequest request, ExpiredJwtException e) {
 		log.error("###################>>>>>>>: ExpiredJwtException -- {}", ExceptionUtils.getMessage(e));
@@ -73,7 +83,7 @@ public class ExceptionAdviceHandler {
     * 校验数据的处理
     */
    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-   @ResponseStatus(HttpStatus.BAD_REQUEST)
+   @ResponseStatus(HttpStatus.OK)
    @ResponseBody
    public Object methodArgumentNotValidException(MethodArgumentNotValidException e) {
        log.info("{}", ExceptionUtils.getStackTrace(e));
@@ -85,7 +95,7 @@ public class ExceptionAdviceHandler {
     * 缺失请求参数
     */
    @ExceptionHandler(value = MissingServletRequestParameterException.class)
-   @ResponseStatus(HttpStatus.BAD_REQUEST)
+   @ResponseStatus(HttpStatus.OK)
    @ResponseBody
    public Object missingServletRequestParameterException(MissingServletRequestParameterException e) {
        
@@ -95,7 +105,7 @@ public class ExceptionAdviceHandler {
     * 参数校验错误
     */
    @ExceptionHandler(value = ConstraintViolationException.class)
-   @ResponseStatus(HttpStatus.BAD_REQUEST)
+   @ResponseStatus(HttpStatus.OK)
    @ResponseBody
    public Object constraintViolationException(ConstraintViolationException e) {
        
@@ -113,7 +123,7 @@ public class ExceptionAdviceHandler {
 
 	// 捕捉其他所有异常
 	@ExceptionHandler(Throwable.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public Result<Object> throwable(HttpServletRequest request, Throwable e) {
 		log.error("###################>>>>>>>: Throwable -- {}", ExceptionUtils.getMessage(e));

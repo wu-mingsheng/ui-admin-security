@@ -2,6 +2,7 @@ package com.boe.admin.uiadmin.controller;
 
 import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
 
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +30,71 @@ import lombok.extern.slf4j.Slf4j;
 @Valid
 public class FileController {
 	
-	@GetMapping("ddd")
-	@PreAuthorize("hasPermission('/aaa/ddd','/aaa/ddd')")
-	public Result<Object> ddd(){
-		return Result.of(null, "ok", 200);
+	@GetMapping("getTableList")
+	public Result<Object> getTableList(HttpServletRequest request) throws Exception {
+		Enumeration<String> names = request.getParameterNames();
+		while(names.hasMoreElements()){
+		   String name =  names.nextElement();
+		   String value = request.getParameter(name);
+		   log.info(name+"---"+value);
+		}
+		
+		
+		return Result.of(null, "获取图书列表成功", 200);
+		
+	}
+	
+	
+	@GetMapping("getCategory")
+	public Result<Object> getCategory(){
+	    List<Map<String, Object>> data = Lists.newArrayList();
+	    for (int i = 0; i < 5; i++) {
+	    	Map<String,Object> map = Maps.newHashMap();
+	    	map.put("label", "label"+ i);
+	    	
+	    	map.put("num", 100 + i);
+	    	data.add(map);
+		}
+		
+		return Result.of(data, SUCCESS);
+	}
+	@GetMapping("getBook")
+	public Result<Object> getBook(@RequestParam("fileName")String fileName){
+		 Map<String,Object> map = Maps.newHashMap();
+	     map.put("fileName", fileName);
+	     map.put("path", "path");
+	     map.put("filePath", "filePath");
+	     map.put("unzipPath", "unzipPath");
+	     map.put("url", "url");
+	     map.put("title", "title");
+	     map.put("author", "author");
+	     map.put("language", "zh-CN");
+	     map.put("rootFile", "/home/user");
+	     map.put("publisher", "publisher");
+	     List<Object> list = Lists.newArrayList();
+	     for (int i = 0; i < 4; i++) {
+	    	 Map<String, Object> m = Maps.newHashMap();
+	    	 m.put("label", "目录" + i);
+	    	 m.put("www", "https://www.baidu.com");
+	    	
+	    	 if( i == 1) {
+	    		 List<Map<String, Object>> list2 = Lists.newArrayList();
+	    		 Map<String,Object> map2 = Maps.newHashMap();
+	    		 map2.put("label", "二级目录");
+	    		 list2.add(map2);
+	    		 m.put("children", list2);
+	    	 }
+	    	 list.add(m);
+		}
+	     map.put("capterTree", list);
+	     map.put("contents", list);
+	     map.put("cover", "https://img.zcool.cn/community/014d7a5d7ce639a801211d533a604c.jpg@1280w_1l_2o_100sh.jpg");
+	     map.put("coverPath", "coverPath");
+	     map.put("category", "category");
+	     map.put("categoryText", "categoryText");
+	     return Result.of(map, SUCCESS);
+		
+		
 	}
 	
 	

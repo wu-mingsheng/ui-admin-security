@@ -15,7 +15,7 @@ public enum ResultCodeEnum {
 	USERNAME_OR_PASSWORD_ERR(401, "用户名或密码错误"),
 	ILLEGAL_TOKEN(401, "Illegal token"),//非法token
 	OTHER_CLIENTS_LOGGED_IN(401, "Other clients logged in"),//其他终端登录
-	TOKEN_EXPIRED(401, "Token expired"),//token过期
+	TOKEN_EXPIRED(-2, "Token expired"),//token过期
 	ERROR(-1, "ERROR");//请求失败
 	
 	private Integer code;

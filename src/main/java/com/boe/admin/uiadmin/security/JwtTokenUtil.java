@@ -37,7 +37,7 @@ public class JwtTokenUtil{
 	                // 自定义属性 放入用户拥有权限
 	                .claim("authorities", JSON.toJSONString(userDetails.getAuthorities()))
 	                // 失效时间
-	                .setExpiration(new Date(Instant.now().toEpochMilli() + Constant.TOKEN_EXPIRE_TIME))
+	                .setExpiration(new Date(Instant.now().toEpochMilli() + Constant.TOKEN_EXPIRE_TIMEMILLS))
 	                // 签名算法和密钥
 	                .signWith(SignatureAlgorithm.HS512, Constant.TOKEN_SECRET)
 	                .compact();
