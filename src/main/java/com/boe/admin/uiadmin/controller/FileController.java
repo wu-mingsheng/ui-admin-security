@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.boe.admin.uiadmin.common.Result;
+import com.boe.admin.uiadmin.utils.DateUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -30,17 +31,43 @@ import lombok.extern.slf4j.Slf4j;
 @Valid
 public class FileController {
 	
+	
+	@GetMapping("deleteBook")
+	public Result<Object> deleteBook(@RequestParam("id") Integer id) throws Exception{
+		return Result.of(null, "删除成功", 200);
+	}
+	
 	@GetMapping("getTableList")
-	public Result<Object> getTableList(HttpServletRequest request) throws Exception {
+	public Result<Object> getTableList(HttpServletRequest request, 
+			@RequestParam(value = "page", defaultValue = "1")Integer page, 
+			@RequestParam(value = "pageSize", defaultValue = "10")Integer pageSize) throws Exception {
 		Enumeration<String> names = request.getParameterNames();
 		while(names.hasMoreElements()){
 		   String name =  names.nextElement();
 		   String value = request.getParameter(name);
 		   log.info(name+"---"+value);
 		}
+		Map<String, Object> data = Maps.newHashMap();
+		List<Object> list = Lists.newArrayList();
+		for (int i = 0; i < 10; i++) {
+			Map<String,Object> map = Maps.newHashMap();
+			map.put("id", i + 100);
+			map.put("title", "title" + i);
+			map.put("author", "wms" + i);
+			map.put("publisher", "hellojwt" + i);
+			map.put("category", "java" + i);
+			map.put("language", "zh-cn" + i);
+			map.put("filename", "");
+			map.put("createTime", DateUtil.now());
+			map.put("cover", "https://img.zcool.cn/community/014d7a5d7ce639a801211d533a604c.jpg@1280w_1l_2o_100sh.jpg");
+			list.add(map);
+		}
 		
-		
-		return Result.of(null, "获取图书列表成功", 200);
+		data.put("list", list);
+		data.put("page", page);
+		data.put("pageSize", pageSize);
+		data.put("count", 120);
+		return Result.of(data, "获取图书列表成功", 200);
 		
 	}
 	
