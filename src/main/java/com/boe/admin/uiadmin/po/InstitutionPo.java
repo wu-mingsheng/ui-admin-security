@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.boe.admin.uiadmin.enums.StateEnum;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class BasePo {
-	
+@Builder
+public class InstitutionPo {
 	
 	@TableId
 	private Integer id;
@@ -22,6 +23,36 @@ public class BasePo {
 	
 	private LocalDateTime updateTime;
 	
-	private StateEnum status;
+	private StateEnum state;
+	
+	//======================业务字段==============================
+	
+	private String name;
+	
+	//private Integer authorizedNum;
+	
+	private String category;
+	
+	private Integer syncState;
+	
+	private LocalDateTime syncTime;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
