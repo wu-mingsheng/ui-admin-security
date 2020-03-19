@@ -1,21 +1,34 @@
 package com.boe.admin.uiadmin.controller;
 
 
+import static com.boe.admin.uiadmin.common.Result.of;
+import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boe.admin.uiadmin.common.Result;
+import com.boe.admin.uiadmin.enums.ResultCodeEnum;
 import com.boe.admin.uiadmin.service.LoginService;
+import com.boe.admin.uiadmin.utils.DateUtil;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import cn.miludeer.jsoncode.JsonCode;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("user")
 @Slf4j
+@Validated
 public class UserController {
 
     @Autowired
@@ -75,6 +89,90 @@ public class UserController {
          return Result.of(null, "登出成功", 200);
     }
 
+    /**
+     * 用户列表
+     */
+    @GetMapping("list")
+    public Result<Object> list(@RequestParam(value = "username", required = false)String username, 
+    		@RequestParam(value = "page", required = true)Integer page,
+    		@RequestParam(value = "pageSize", required = true)Integer pageSize) throws Exception {
+    	
+    	log.info(" === request params is : [username={},page={},pageSize={}]", username, page, pageSize);
+    	
+    	List<Map<String, Object>> list = Lists.newArrayList();
+    	for (int i = 0; i < 10; i++) {
+			Map<String,Object> map = Maps.newHashMap();
+			map.put("username", "wms"+i);
+			map.put("roleName", "admin");
+			map.put("id", i);
+			map.put("updateTime", DateUtil.now());
+			list.add(map);
+		}
+    	
+    	Map<String, Object> data = Maps.newHashMap();
+    	data.put("total", 29);    	
+    	data.put("list", list);    	
+    	return of(data, SUCCESS);
+    }
+    
+    
+    /**
+     * 添加用户
+     */
+    @PostMapping("add")
+    public Result<Object> addUser(HttpServletRequest request) throws Exception {
+    	String body = request.getReader().lines().collect(Collectors.joining());
+    	log.info(" === request body is : [{}]", body);
+    	return ok(null);
+    	
+    }
+    
+
+    /**
+     * 删除用户
+     */
+    @PostMapping("delete")
+    public Result<Object> deleteUser(HttpServletRequest request) throws Exception {
+    	String body = request.getReader().lines().collect(Collectors.joining());
+    	log.info(" === request body is : [{}]", body);
+    	String id = JsonCode.getValue(body, "$.id");
+    	log.info(" === id is [{}]", id);
+    	return ok(null);
+    	
+    }
+    /**
+     * 查询用户
+     */
+    @GetMapping("get")
+    public Result<Object> getUser(@RequestParam("id")Integer id) throws Exception {
+    	
+    	log.info(" === request params is : [id: {}]", id);
+    	Map<String,Object> map = Maps.newHashMap();
+		map.put("username", "wms");
+		map.put("roleName", "admin");
+		map.put("password", "123456");
+		map.put("id", 1);
+		map.put("updateTime", DateUtil.now());
+    	return ok(map);
+    	
+    }
+    
+    /**
+     * 编辑用户
+     */
+    @PostMapping("update")
+    public Result<Object> updateUser(HttpServletRequest request) throws Exception {
+    	
+    	String body = request.getReader().lines().collect(Collectors.joining());
+    	log.info(" === request body is : [{}]", body);
+    	return ok(null);
+    	
+    }
+    
+    private Result<Object> ok(Object obj){
+    	
+    	return of(obj, SUCCESS);
+    }
     
 
 
