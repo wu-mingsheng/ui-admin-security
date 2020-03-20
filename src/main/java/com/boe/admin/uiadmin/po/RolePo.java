@@ -16,5 +16,7 @@ public class RolePo extends BasePo {
 	private Long id;
 	
 	private String name;
+	
+	private String alias;
 
 }

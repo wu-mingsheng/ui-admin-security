@@ -9,7 +9,7 @@ public enum RoleEnum {
 	
 	ADMIN("系统管理员", "admin", 0), NORMAL("普通用户", "view", 1);
 	
-	private String desc;
+	private String roleDesc;
 	
 	private String roleName;
 	

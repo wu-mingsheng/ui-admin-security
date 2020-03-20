@@ -2,17 +2,23 @@ package com.boe.admin.uiadmin.service;
 
 import static com.boe.admin.uiadmin.common.Result.of;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boe.admin.uiadmin.common.Result;
@@ -24,6 +30,8 @@ import com.boe.admin.uiadmin.po.RolePo;
 import com.boe.admin.uiadmin.po.UserPo;
 import com.boe.admin.uiadmin.po.UserRolePo;
 import com.boe.admin.uiadmin.vo.UserVo;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 @Service
@@ -99,6 +107,41 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
     	
     	
     	
+	}
+    /**
+     * 查询用户列表
+     */
+	public Result<Object> listUsers(String username, Long currentPage, Long pageSize) throws Exception {
+		LambdaQueryWrapper<UserPo> usernameQuery = Wrappers.lambdaQuery();
+		if(StringUtils.isNotBlank(username)) {
+			usernameQuery.like(UserPo::getUsername, username);
+		}
+		
+		Page<UserPo> page = new Page<>(currentPage, pageSize);
+		page.setOrders(Arrays.asList(OrderItem.asc("id")));
+		page = userMapper.selectPage(page, usernameQuery);
+		List<UserPo> records = page.getRecords();
+		Map<String, Object> data = Maps.newHashMap();
+		List<Map<String, Object>> list = Lists.newArrayList();
+		for (UserPo userPo : records) {
+			Long userId = userPo.getId();
+			LambdaQueryWrapper<UserRolePo> userIdQuery = Wrappers.lambdaQuery();
+			userIdQuery.eq(UserRolePo::getUserId, userId);
+			UserRolePo userRolePo = userRoleMapper.selectOne(userIdQuery);
+			Long roleId = userRolePo.getRoleId();
+			RolePo rolePo = rolepaMapper.selectById(roleId);
+			
+			Map<String, Object> map = PropertyUtils.describe(userPo);
+			map.put("roleName", rolePo.getName());
+			map.put("alias", rolePo.getAlias());
+			list.add(map);
+		}
+		
+		data.put("total", page.getTotal());//总条数
+		data.put("list", list);
+		return of(data, "用户列表查询成功", 200);
+
+		
 	}
 
 }

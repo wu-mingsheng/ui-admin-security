@@ -4,7 +4,6 @@ package com.boe.admin.uiadmin.controller;
 import static com.boe.admin.uiadmin.common.Result.of;
 import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,6 @@ import com.boe.admin.uiadmin.service.UserService;
 import com.boe.admin.uiadmin.utils.DateUtil;
 import com.boe.admin.uiadmin.vo.UserVo;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import cn.miludeer.jsoncode.JsonCode;
@@ -95,25 +93,12 @@ public class UserController {
      */
     @GetMapping("list")
     public Result<Object> list(@RequestParam(value = "username", required = false)String username, 
-    		@RequestParam(value = "page", required = true)Integer page,
-    		@RequestParam(value = "pageSize", required = true)Integer pageSize) throws Exception {
+    		@RequestParam(value = "page", required = true)Long page,
+    		@RequestParam(value = "pageSize", required = true)Long pageSize) throws Exception {
     	
     	log.info(" === request params is : [username={},page={},pageSize={}]", username, page, pageSize);
+    	return userService.listUsers(username, page, pageSize);
     	
-    	List<Map<String, Object>> list = Lists.newArrayList();
-    	for (int i = 0; i < 10; i++) {
-			Map<String,Object> map = Maps.newHashMap();
-			map.put("username", "wms"+i);
-			map.put("roleName", "admin");
-			map.put("id", i);
-			map.put("updateTime", DateUtil.now());
-			list.add(map);
-		}
-    	
-    	Map<String, Object> data = Maps.newHashMap();
-    	data.put("total", 29);    	
-    	data.put("list", list);    	
-    	return of(data, SUCCESS);
     }
     
     

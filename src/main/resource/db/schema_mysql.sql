@@ -13,6 +13,7 @@ unique index username_index(username)
 CREATE TABLE IF NOT EXISTS `role` (
 `id` bigint(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ID',
 `name` varchar(32) NOT NULL DEFAULT '' COMMENT '角色名称',
+`alias` varchar(64) NOT NULL DEFAULT '' COMMENT '角色描述',
 creater_id bigint(11) NOT NULL default 0  COMMENT '创建人id',
 updater_id bigint(11) NOT NULL default 0  COMMENT '更新人id',
 state varchar(16) NOT NULL DEFAULT '' COMMENT 'DELETED,ENABLED,DISABLED',
