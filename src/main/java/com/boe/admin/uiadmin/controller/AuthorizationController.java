@@ -33,6 +33,12 @@ public class AuthorizationController {
 	    	
 	    	return of(obj, SUCCESS);
 	    }
+	 @GetMapping("orders")
+	 public Result<Object> orders(HttpServletRequest request) throws Exception{
+		 Map<String, String[]> parameterMap = request.getParameterMap();
+		 log.info("{}", parameterMap);
+		 return ok(null);
+	 }
 	 
 	 @GetMapping("list")
 	 public Result<Object> list(HttpServletRequest request) throws Exception {
