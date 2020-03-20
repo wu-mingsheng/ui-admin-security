@@ -4,13 +4,12 @@ package com.boe.admin.uiadmin.controller;
 import static com.boe.admin.uiadmin.common.Result.of;
 import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boe.admin.uiadmin.common.Result;
-import com.boe.admin.uiadmin.enums.ResultCodeEnum;
 import com.boe.admin.uiadmin.service.LoginService;
+import com.boe.admin.uiadmin.service.UserService;
 import com.boe.admin.uiadmin.utils.DateUtil;
+import com.boe.admin.uiadmin.vo.UserVo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -44,7 +44,8 @@ public class UserController {
     @Autowired
     private LoginService loginService;
 
-
+    @Autowired
+    private UserService userService;
 
     /**
      * 通过用户名和密码登录
@@ -120,10 +121,12 @@ public class UserController {
      * 添加用户
      */
     @PostMapping("add")
-    public Result<Object> addUser(HttpServletRequest request) throws Exception {
-    	String body = request.getReader().lines().collect(Collectors.joining());
-    	log.info(" === request body is : [{}]", body);
-    	return ok(null);
+    public Result<Object> addUser(@RequestBody @Valid UserVo userVo) throws Exception {
+    	
+    	log.info(" === request body is : [{}]", userVo);
+    	
+    	return userService.addUser(userVo);
+
     	
     }
     
@@ -173,6 +176,9 @@ public class UserController {
     	
     	return of(obj, SUCCESS);
     }
+    
+   
+    
     
 
 

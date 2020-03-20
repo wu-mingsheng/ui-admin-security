@@ -3,7 +3,7 @@ package com.boe.admin.uiadmin.common;
 public class Constant {
 	
 	 // 过期时间1h
-    public static final long TOKEN_EXPIRE_TIMEMILLS = 1 * 60 * 60 * 1000;
+    public static final long TOKEN_EXPIRE_TIMEMILLS = 12 * 60 * 60 * 1000;
     
 
     //TOKEN HEADER
