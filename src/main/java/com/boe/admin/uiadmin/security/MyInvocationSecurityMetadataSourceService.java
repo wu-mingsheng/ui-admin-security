@@ -71,7 +71,7 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 		String uri = request.getRequestURI();
 		log.info("==== request uri : [{}]", uri);
 		try {
-			URI_ROLES_CACHE.get(uri, () -> {
+			Collection<ConfigAttribute> collection = URI_ROLES_CACHE.get(uri, () -> {
 				Set<ConfigAttribute> roles = Sets.newHashSet();
 				LambdaQueryWrapper<PermissionPo> uriQuery = Wrappers.lambdaQuery();
 				uriQuery.eq(PermissionPo::getUrl, uri);
@@ -94,6 +94,9 @@ public class MyInvocationSecurityMetadataSourceService implements FilterInvocati
 				
 				return roles;
 			});
+			log.info(" === 访问当前资源url需要的角色{}", collection);
+			return collection;
+			
 		} catch (Exception e) {
 			log.error("获取用户请求uri对应的role失败, 默认启用请求放行: {}", ExceptionUtils.getMessage(e));
 		}
