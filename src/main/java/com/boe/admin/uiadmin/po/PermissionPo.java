@@ -1,5 +1,8 @@
 package com.boe.admin.uiadmin.po;
 
+import java.util.List;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -20,5 +23,8 @@ public class PermissionPo extends BasePo {
 	private String description;
 	
 	private Long pid;
+	
+	@TableField(exist = false)
+	private List<PermissionPo> children;
 
 }
