@@ -1,3 +1,6 @@
+CREATE DATABASE  `sys_admin` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
 CREATE TABLE IF NOT EXISTS `user` (
 `id` bigint(11) NOT NULL AUTO_INCREMENT primary key COMMENT 'ID',
 `username` varchar(32) NOT NULL default '' comment '用户名',
