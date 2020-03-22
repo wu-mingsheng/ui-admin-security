@@ -3,21 +3,6 @@
 
 <mapper namespace="com.boe.admin.uiadmin.dao.UserMapper">
 	
-	<!-- 查询用户的所有权限 -->
-	<select id="selectPermissionsByUserId" resultType="com.boe.admin.uiadmin.po.PermissionPo" parameterType="long">
-		SELECT DISTINCT p.* FROM user_role ur
-			LEFT JOIN role_permission rp ON ur.role_id = rp.role_id
-			LEFT JOIN permission p ON rp.permission_id = p.id
-		WHERE ur.user_id = #{userId}
-	</select>
-
-
-	<!-- 查询用户所有角色 -->
-	<select id="selectRolesByUserId" resultType="com.boe.admin.uiadmin.po.RolePo" parameterType="long">
-		SELECT r.* FROM role r
-		LEFT JOIN user_role ur ON ur.role_id = r.id
-		WHERE ur.user_id = #{userId}
-	</select>
 	
 
 </mapper>

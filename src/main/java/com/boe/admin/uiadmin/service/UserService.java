@@ -2,6 +2,7 @@ package com.boe.admin.uiadmin.service;
 
 import static com.boe.admin.uiadmin.common.Result.of;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +23,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boe.admin.uiadmin.common.Result;
+import com.boe.admin.uiadmin.dao.PermissionMapper;
 import com.boe.admin.uiadmin.dao.RoleMapper;
+import com.boe.admin.uiadmin.dao.RolePermissionMapper;
 import com.boe.admin.uiadmin.dao.UserMapper;
 import com.boe.admin.uiadmin.dao.UserRoleMapper;
 import com.boe.admin.uiadmin.po.PermissionPo;
+import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
 import com.boe.admin.uiadmin.po.UserPo;
 import com.boe.admin.uiadmin.po.UserRolePo;
@@ -40,24 +44,54 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
 	@Autowired
 	private UserMapper userMapper;
 	@Autowired
-	private RoleMapper rolepaMapper;
+	private RoleMapper roleMapper;
 	@Autowired
 	private UserRoleMapper userRoleMapper;
 	
+	@Autowired
+	private RolePermissionMapper rolePermissionMapper;
+	
+	@Autowired
+	private PermissionMapper permissionMapper;
 
 	/**
 	 * 根据用户id查询用户所有权限
 	 */
     public List<PermissionPo> selectPermissionsByUserId(Long userId) {
-    	
-        return userMapper.selectPermissionsByUserId(userId);
+    	LambdaQueryWrapper<UserRolePo> lambdaQuery = Wrappers.lambdaQuery();
+    	lambdaQuery.eq(UserRolePo::getUserId, userId);
+    	List<UserRolePo> list = userRoleMapper.selectList(lambdaQuery);
+    	List<PermissionPo> result = Lists.newArrayList();
+    	for (UserRolePo userRolePo : list) {
+			Long roleId = userRolePo.getRoleId();
+			LambdaQueryWrapper<RolePermissionPo> roleIdQuery = Wrappers.lambdaQuery();
+			roleIdQuery.eq(RolePermissionPo::getRoleId, roleId);
+			List<RolePermissionPo> selectList = rolePermissionMapper.selectList(roleIdQuery);
+			for (RolePermissionPo rolePermissionPo : selectList) {
+				Long permissionId = rolePermissionPo.getPermissionId();
+				PermissionPo permissionPo = permissionMapper.selectById(permissionId);
+				result.add(permissionPo);
+				
+			}
+			
+		}
+    	return result;
+        
     }
     /**
      * 根据用户id查询用户所有角色
      */
     public List<RolePo> selectRolesByUserId(Long userId) {
-    	
-        return userMapper.selectRolesByUserId(userId);
+    	LambdaQueryWrapper<UserRolePo> lambdaQuery = Wrappers.lambdaQuery();
+    	lambdaQuery.eq(UserRolePo::getUserId, userId);
+    	List<UserRolePo> list = userRoleMapper.selectList(lambdaQuery);
+    	List<RolePo> result = Lists.newArrayList();
+    	for (UserRolePo userRolePo : list) {
+			Long roleId = userRolePo.getRoleId();
+			RolePo rolePo = roleMapper.selectById(roleId);
+			result.add(rolePo);
+		}
+        return result;
     }
 
     /**
@@ -80,7 +114,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
     		return of(null, "用户名已近存在", 400);
     	}
     	//valid roleId if exists
-    	RolePo rolePo = rolepaMapper.selectById(roleId);
+    	RolePo rolePo = roleMapper.selectById(roleId);
     	if(rolePo == null) {
     		return of(null, "角色不存在", 400);
     	}
@@ -129,7 +163,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
 			userIdQuery.eq(UserRolePo::getUserId, userId);
 			UserRolePo userRolePo = userRoleMapper.selectOne(userIdQuery);
 			Long roleId = userRolePo.getRoleId();
-			RolePo rolePo = rolepaMapper.selectById(roleId);
+			RolePo rolePo = roleMapper.selectById(roleId);
 			
 			Map<String, Object> map = PropertyUtils.describe(userPo);
 			map.put("roleName", rolePo.getName());
