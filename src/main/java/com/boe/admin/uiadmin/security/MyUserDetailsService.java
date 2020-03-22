@@ -3,8 +3,6 @@ package com.boe.admin.uiadmin.security;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-@CacheConfig(cacheNames = {"userCache"})
+//@CacheConfig(cacheNames = {"userCache"})
 public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
@@ -40,7 +38,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Override
 	//unless = "#result == null || #result.size() <= 0"
-	@Cacheable(key="#username",  unless="#result == null")
+	//@Cacheable(key="#username",  unless="#result == null")
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("=== [username:{}]", username);
 		// 查数据库
