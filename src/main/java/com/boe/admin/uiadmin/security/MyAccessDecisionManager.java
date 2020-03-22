@@ -35,7 +35,9 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
         if (null == configAttributes || 0 >= configAttributes.size()) {
-            return;
+//        	log.error(" === 访问资源没有配置访问权限");
+//        	throw new AccessDeniedException("当前访问没有权限");
+        	return;
         } else {
             String needRole;
             for(Iterator<ConfigAttribute> iter = configAttributes.iterator(); iter.hasNext(); ) {

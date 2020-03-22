@@ -23,8 +23,6 @@ import com.boe.admin.uiadmin.dao.PermissionMapper;
 import com.boe.admin.uiadmin.dao.RolePermissionMapper;
 import com.boe.admin.uiadmin.po.PermissionPo;
 import com.boe.admin.uiadmin.po.RolePermissionPo;
-import com.boe.admin.uiadmin.security.MyInvocationSecurityMetadataSourceService;
-import com.boe.admin.uiadmin.utils.CacheUtil;
 import com.boe.admin.uiadmin.vo.PermissionVo;
 import com.google.common.collect.Lists;
 
@@ -83,9 +81,6 @@ public class PermissionService extends ServiceImpl<PermissionMapper, PermissionP
 			rolePermissionPo.setPermissionId(permissionId);
 			rolePermissionMapper.insert(rolePermissionPo);
 		}
-		//3. 权限缓冲刷新
-		CacheUtil.USERID_ALLPERMISSION.invalidateAll();
-		MyInvocationSecurityMetadataSourceService.URI_ROLES_CACHE.invalidateAll();
 		return of(null, SUCCESS);
 	}
 

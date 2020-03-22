@@ -4,8 +4,10 @@ import static com.boe.admin.uiadmin.enums.ResultCodeEnum.ILLEGAL_TOKEN;
 import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
 import static com.boe.admin.uiadmin.enums.ResultCodeEnum.TOKEN_EXPIRED;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +22,17 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.boe.admin.uiadmin.common.Result;
+import com.boe.admin.uiadmin.dao.PermissionMapper;
+import com.boe.admin.uiadmin.dao.RoleMapper;
+import com.boe.admin.uiadmin.dao.RolePermissionMapper;
+import com.boe.admin.uiadmin.po.PermissionPo;
+import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
 import com.boe.admin.uiadmin.po.UserPo;
 import com.boe.admin.uiadmin.security.JwtTokenUtil;
 import com.boe.admin.uiadmin.security.User;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Service
 public class LoginService {
@@ -38,12 +46,17 @@ public class LoginService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     
-
+    @Autowired
+    private PermissionMapper permissionMapper;
     
     @Autowired
     private UserService userService;
+
+    @Autowired
+	private RolePermissionMapper rolePermissionMapper;
     
-   
+    @Autowired
+    private RoleMapper roleMapper;
 
 
     /**
@@ -90,15 +103,50 @@ public class LoginService {
         	return Result.of(null, ILLEGAL_TOKEN);
         }
 		
-		
+	
 		List<RolePo> roleList = userService.selectRolesByUserId(userPo.getId());
+		List<PermissionPo> permissionList = userService.selectPermissionsByUserId(userPo.getId());
 
 		Map<String, Object> map = Maps.newHashMap();
 		
 		map.put("roles", roleList.stream().map(RolePo::getName).collect(Collectors.toList()));
 		map.put("name", username);
+		map.put("permissions", permissionList.stream().map(PermissionPo::getName).collect(Collectors.toSet()));
+		//查询出所有的url-roles
+		List<PermissionPo> allPermissions = permissionMapper.selectList(null);
+		Map<String, Object> urlRoles = Maps.newHashMap();
+		for (PermissionPo permissionPo : allPermissions) {
+			String url = permissionPo.getUrl();
+			Collection<String> roleNames = getRoleNames(url);
+			urlRoles.put(url, roleNames);
+		}
+		map.put("urlRoles", urlRoles);
 		
 		return Result.of(map, SUCCESS);
+	}
+	
+	private Collection<String> getRoleNames(String url) throws Exception {
+		Set<String> roles = Sets.newHashSet();
+		LambdaQueryWrapper<PermissionPo> uriQuery = Wrappers.lambdaQuery();
+		uriQuery.eq(PermissionPo::getUrl, url);
+		PermissionPo permissionPo = permissionMapper.selectOne(uriQuery);
+		if (null == permissionPo) {
+
+			return roles;
+		}
+		Long permissionId = permissionPo.getId();
+		LambdaQueryWrapper<RolePermissionPo> permissionIdQuery = Wrappers.lambdaQuery();
+		permissionIdQuery.eq(RolePermissionPo::getPermissionId, permissionId);
+		List<RolePermissionPo> rolePermissionList = rolePermissionMapper.selectList(permissionIdQuery);
+
+		for (RolePermissionPo rolePermissionPo : rolePermissionList) {
+			Long roleId = rolePermissionPo.getRoleId();
+			RolePo rolePo = roleMapper.selectById(roleId);
+			String roleName = rolePo.getName();
+			roles.add(roleName);
+		}
+
+		return roles;
 	}
 
 

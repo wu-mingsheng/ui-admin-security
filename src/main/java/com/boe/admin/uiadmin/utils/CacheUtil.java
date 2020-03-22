@@ -1,15 +1,8 @@
 package com.boe.admin.uiadmin.utils;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.boe.admin.uiadmin.po.PermissionPo;
-import com.boe.admin.uiadmin.service.UserService;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -19,23 +12,14 @@ import com.google.common.cache.RemovalNotification;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
 public class CacheUtil {
 	
 	
-	private static UserService userService;
-	
-	
-	
-	@Autowired
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
 
 
 
 
-	public static final LoadingCache<Long, Set<String>> USERID_ALLPERMISSION = CacheBuilder
+	public static final LoadingCache<Long, Set<String>> TODO = CacheBuilder
             .newBuilder()//CacheBuilder的构造函数是私有的，只能通过其静态方法newBuilder()来获得CacheBuilder的实例
             .concurrencyLevel(1)//设置并发级别为1，并发级别是指可以同时写缓存的线程数
             .expireAfterWrite(1, TimeUnit.DAYS)//设置写缓存后过期
@@ -53,12 +37,7 @@ public class CacheUtil {
                 new CacheLoader<Long, Set<String>>() {
                     @Override
                     public Set<String> load(Long key) throws Exception {
-                    	Set<String> permissions = new HashSet<>();
-                        List<PermissionPo> permissionPoList = userService.selectPermissionsByUserId(key);
-                        for (PermissionPo per :permissionPoList) {
-                            permissions.add(per.getUrl());
-                        }
-                        return permissions;
+                    	return null;
                     }
 
             });
