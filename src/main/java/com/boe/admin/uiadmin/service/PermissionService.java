@@ -21,6 +21,8 @@ import com.boe.admin.uiadmin.dao.PermissionMapper;
 import com.boe.admin.uiadmin.dao.RolePermissionMapper;
 import com.boe.admin.uiadmin.po.PermissionPo;
 import com.boe.admin.uiadmin.po.RolePermissionPo;
+import com.boe.admin.uiadmin.utils.DateUtil;
+import com.boe.admin.uiadmin.utils.UserUtil;
 import com.boe.admin.uiadmin.vo.PermissionVo;
 import com.google.common.collect.Lists;
 
@@ -103,8 +105,46 @@ public class PermissionService {
 		
 		
 	}
+
+	/**
+	 * 删除权限
+	 * 1. 删除权限基本信息
+	 * 2. 删除角色权限关系
+	 * 3. 删除子权限及子权限关系
+	 */
+	public Result<Void> deletePermission(Long permissionId) throws Exception {
+		
+		handleDel(permissionId);
+		return of(null, "权限删除成功", 200);
+	}
 	
-	
+	private void handleDel(Long id) throws Exception {
+		//删除当前节点的角色权限关系
+		rolePermissionMapper.delete(Wrappers.<RolePermissionPo>lambdaQuery().eq(RolePermissionPo::getPermissionId, id));
+		//删除当前节点
+		permissionMapper.deleteById(id);
+		//查找子节点
+		LambdaQueryWrapper<PermissionPo> lambdaQuery = Wrappers.lambdaQuery();
+		lambdaQuery.eq(PermissionPo::getPid, id);
+		List<PermissionPo> list = permissionMapper.selectList(lambdaQuery);
+		for (PermissionPo permissionPo : list) {
+			handleDel(permissionPo.getId());
+		}
+	}
+
+	/**
+	 * 编辑权限,只修改基本信息
+	 */
+	public Result<Void> updatePermission(@Valid PermissionVo permissionVo) {
+		PermissionPo permissionPo = permissionMapper.selectById(permissionVo.getId());
+		permissionPo.setName(permissionVo.getName());
+		permissionPo.setDescription(permissionVo.getDescription());
+		permissionPo.setUrl(permissionVo.getUrl());
+		permissionPo.setUpdaterId(UserUtil.getCurrentUserId());
+		permissionPo.setUpdateTime(DateUtil.now());
+		permissionMapper.updateById(permissionPo);
+		return of(null, "权限编辑成功", 200);
+	}
 	
 	
 	

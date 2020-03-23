@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class PermissionVo {
 	
+	private Long id;
+	
 	@NotBlank(message = "url不能为空")
 	private String url;
 	@NotBlank(message = "name不能为空")
