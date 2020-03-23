@@ -1,8 +1,8 @@
 package com.boe.admin.uiadmin.service;
 
 import static com.boe.admin.uiadmin.common.Result.of;
+import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +20,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boe.admin.uiadmin.common.Result;
 import com.boe.admin.uiadmin.dao.PermissionMapper;
 import com.boe.admin.uiadmin.dao.RoleMapper;
@@ -33,13 +31,15 @@ import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
 import com.boe.admin.uiadmin.po.UserPo;
 import com.boe.admin.uiadmin.po.UserRolePo;
+import com.boe.admin.uiadmin.utils.DateUtil;
+import com.boe.admin.uiadmin.utils.UserUtil;
 import com.boe.admin.uiadmin.vo.UserVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
 @Service
-public class UserService extends ServiceImpl<UserMapper, UserPo> implements IService<UserPo> {
+public class UserService {
 	
 	@Autowired
 	private UserMapper userMapper;
@@ -175,6 +175,60 @@ public class UserService extends ServiceImpl<UserMapper, UserPo> implements ISer
 		data.put("list", list);
 		return of(data, "用户列表查询成功", 200);
 
+		
+	}
+	/**
+	 * 1. 删除user表用户信息
+	 * 2. 删除userrole表关联信息
+	 */
+	@Transactional
+	public Result<Object> deleteUser(long userId) {
+		userMapper.deleteById(userId);
+		LambdaQueryWrapper<UserRolePo> lambdaQuery = Wrappers.lambdaQuery();
+		lambdaQuery.eq(UserRolePo::getUserId, userId);
+		userRoleMapper.delete(lambdaQuery);
+		return of(null, "用户删除成功", 200);
+	}
+	
+	/**
+	 * 通过id查询用户
+	 */
+	public Result<Object> getUser(Long id) throws Exception{
+		UserPo userPo = userMapper.selectById(id);
+		
+		Map<String, Object> data = Maps.newHashMap();
+		data.put("id", id);
+		data.put("username", userPo == null? "" : userPo.getUsername());
+		
+		return of(data, SUCCESS);
+	}
+	
+	/**
+	 * 1. 更新用户表
+	 * 2. 更新用户角色关系表
+	 */
+	public Result<Object> updateUser(UserVo userVo) throws Exception {
+		Long userId = userVo.getId();
+		//1. 更新用户表
+		UserPo userPo = userMapper.selectById(userId);
+		userPo.setUsername(userVo.getUsername());
+		userPo.setPassword(DigestUtils.md5DigestAsHex(userVo.getPassword().getBytes()));
+		userPo.setUpdaterId(UserUtil.getCurrentUserId());
+		userPo.setUpdateTime(DateUtil.now());
+		userMapper.updateById(userPo);
+		
+		//2. 更新用户角色关系表
+		
+		//2.1 删除之前的关系
+		userRoleMapper.delete(Wrappers.<UserRolePo>lambdaQuery().eq(UserRolePo::getUserId, userId));
+		//2.2 维护新的关系
+		UserRolePo userRolePo = new UserRolePo();
+		userRolePo.setRoleId(userVo.getRoleId());
+		userRolePo.setUserId(userId);
+		userRolePo.setBasePoFields();
+		userRoleMapper.insert(userRolePo);
+		return of(null, "用户编辑成功", 200);
+		
 		
 	}
 

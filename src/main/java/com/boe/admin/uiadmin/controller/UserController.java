@@ -1,15 +1,12 @@
 package com.boe.admin.uiadmin.controller;
 
 
-import static com.boe.admin.uiadmin.common.Result.of;
-import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
-
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -23,10 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boe.admin.uiadmin.common.Result;
 import com.boe.admin.uiadmin.service.LoginService;
 import com.boe.admin.uiadmin.service.UserService;
-import com.boe.admin.uiadmin.utils.DateUtil;
 import com.boe.admin.uiadmin.vo.UserVo;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 import cn.miludeer.jsoncode.JsonCode;
 import lombok.extern.slf4j.Slf4j;
@@ -124,24 +119,20 @@ public class UserController {
     	String body = request.getReader().lines().collect(Collectors.joining());
     	log.info(" === request body is : [{}]", body);
     	String id = JsonCode.getValue(body, "$.id");
-    	log.info(" === id is [{}]", id);
-    	return ok(null);
+    	Preconditions.checkState(StringUtils.isNotBlank(id), "id不能为null");
+    	
+    	long userId = Long.parseLong(id);
+    	return userService.deleteUser(userId);
     	
     }
     /**
      * 查询用户
      */
     @GetMapping("get")
-    public Result<Object> getUser(@RequestParam("id")Integer id) throws Exception {
+    public Result<Object> getUser(@RequestParam("id")Long id) throws Exception {
     	
     	log.info(" === request params is : [id: {}]", id);
-    	Map<String,Object> map = Maps.newHashMap();
-		map.put("username", "wms");
-		map.put("roleName", "admin");
-		map.put("password", "123456");
-		map.put("id", 1);
-		map.put("updateTime", DateUtil.now());
-    	return ok(map);
+    	return userService.getUser(id);
     	
     }
     
@@ -153,15 +144,22 @@ public class UserController {
     	
     	String body = request.getReader().lines().collect(Collectors.joining());
     	log.info(" === request body is : [{}]", body);
-    	return ok(null);
+    	String id = JsonCode.getValue(body, "$.id");
+    	String username = JsonCode.getValue(body, "$.username");
+    	String password = JsonCode.getValue(body, "$.password");
+    	String roleId = JsonCode.getValue(body, "$.roleId");
+    	Preconditions.checkState(!StringUtils.isAnyBlank(id, username, password, roleId), "请求参数有错误");
+    	UserVo userVo = UserVo.builder()
+    			.username(username)
+    			.password(password)
+    			.id(Long.parseLong(id))
+    			.roleId(Long.parseLong(roleId))
+    			.build();
+    	return userService.updateUser(userVo);
     	
     }
     
-    private Result<Object> ok(Object obj){
-    	
-    	return of(obj, SUCCESS);
-    }
-    
+
    
     
     

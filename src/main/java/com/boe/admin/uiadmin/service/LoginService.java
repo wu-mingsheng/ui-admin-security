@@ -25,6 +25,7 @@ import com.boe.admin.uiadmin.common.Result;
 import com.boe.admin.uiadmin.dao.PermissionMapper;
 import com.boe.admin.uiadmin.dao.RoleMapper;
 import com.boe.admin.uiadmin.dao.RolePermissionMapper;
+import com.boe.admin.uiadmin.dao.UserMapper;
 import com.boe.admin.uiadmin.po.PermissionPo;
 import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
@@ -51,6 +52,9 @@ public class LoginService {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
 	private RolePermissionMapper rolePermissionMapper;
@@ -86,7 +90,7 @@ public class LoginService {
         }
         
         LambdaQueryWrapper<UserPo> usernameQuery = Wrappers.<UserPo>lambdaQuery().eq(UserPo::getUsername, username);
-        UserPo userPo = userService.getOne(usernameQuery, false);
+        UserPo userPo = userMapper.selectOne(usernameQuery);
         
         
         if (userPo == null) {

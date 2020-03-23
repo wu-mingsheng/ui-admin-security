@@ -8,23 +8,35 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boe.admin.uiadmin.common.Result;
 import com.boe.admin.uiadmin.dao.RoleMapper;
+import com.boe.admin.uiadmin.dao.RolePermissionMapper;
+import com.boe.admin.uiadmin.dao.UserRoleMapper;
+import com.boe.admin.uiadmin.po.RolePermissionPo;
 import com.boe.admin.uiadmin.po.RolePo;
+import com.boe.admin.uiadmin.po.UserRolePo;
+import com.boe.admin.uiadmin.utils.DateUtil;
+import com.boe.admin.uiadmin.utils.UserUtil;
+import com.boe.admin.uiadmin.vo.RoleVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
 @Service
-public class RoleService extends ServiceImpl<RoleMapper, RolePo> implements IService<RolePo> {
+public class RoleService {
 
 	@Autowired
 	private RoleMapper roleMapper;
+	
+	@Autowired
+	private UserRoleMapper userRoleMapper;
+	
+	@Autowired
+	private RolePermissionMapper rolePermissionMapper;
 
 	public Result<Object> addRole(String name, String alias) {
 		
@@ -57,6 +69,40 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePo> implements ISer
 		}
 		
 		return of(data, SUCCESS);
+	}
+
+	/**
+	 * 
+	 * 删除角色
+	 * 1. 删除角色基本信息
+	 * 2. 删除用户角色关系表
+	 * 3. 删除角色权限关系表
+	 */
+	@Transactional
+	public Result<Object> deleteRole(Long id) throws Exception {
+		//1. 删除角色基本信息
+		roleMapper.deleteById(id);
+		//2. 删除用户角色关系表
+		userRoleMapper.delete(Wrappers.<UserRolePo>lambdaQuery().eq(UserRolePo::getRoleId, id));
+		//3. 删除角色权限关系表
+		rolePermissionMapper.delete(Wrappers.<RolePermissionPo>lambdaQuery().eq(RolePermissionPo::getRoleId, id));
+		return of(null, SUCCESS);
+	}
+
+	
+	/**
+	 * 编辑角色,只能修改名称和描述(别名)
+	 */
+	public Result<Object> updateRole(RoleVo roleVo) throws Exception {
+		RolePo rolePo = roleMapper.selectById(roleVo.getId());
+		rolePo.setName(roleVo.getName());
+		rolePo.setAlias(roleVo.getAlias());
+		rolePo.setUpdateTime(DateUtil.now());
+		rolePo.setUpdaterId(UserUtil.getCurrentUserId());
+		roleMapper.updateById(rolePo);
+		
+		return of(null, "角色编辑成功", 200);
+		
 	}
 
 }

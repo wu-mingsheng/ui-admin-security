@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.boe.admin.uiadmin.common.Result;
 import com.boe.admin.uiadmin.dao.PermissionMapper;
 import com.boe.admin.uiadmin.dao.RolePermissionMapper;
@@ -28,7 +26,7 @@ import com.google.common.collect.Lists;
 
 
 @Service
-public class PermissionService extends ServiceImpl<PermissionMapper, PermissionPo> implements IService<PermissionPo> {
+public class PermissionService {
 
 	@Autowired
 	private PermissionMapper permissionMapper;

@@ -3,12 +3,14 @@ package com.boe.admin.uiadmin.vo;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UserVo {
 	
-	private Long idLong;
+	private Long id;
 	
 	@NotBlank(message = "用户名不能为空")
 	private String username;
