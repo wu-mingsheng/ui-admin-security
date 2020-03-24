@@ -19,6 +19,8 @@ public class UiAdminApplication {
 		SpringApplication.run(UiAdminApplication.class, args);
 	}
 	
+	
+	
 	@Bean
     public Validator getValidator() {
         return new LocalValidatorFactoryBean();
