@@ -2,55 +2,34 @@ package com.boe.admin.uiadmin.po;
 
 import java.time.LocalDateTime;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.boe.admin.uiadmin.enums.StateEnum;
+import com.baomidou.mybatisplus.annotation.TableName;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@TableName("institution")
 @Data
-@Builder
-public class InstitutionPo {
+@EqualsAndHashCode(callSuper = true)
+public class InstitutionPo extends BasePo {
 	
-	@TableId
-	private Integer id;
 	
-	private Integer createrId;
 	
-	private Integer updaterId;
 	
-	private LocalDateTime createTime;
-	
-	private LocalDateTime updateTime;
-	
-	private StateEnum state;
-	
-	//======================业务字段==============================
 	
 	private String name;
-	
-	//private Integer authorizedNum;
-	
+
 	private String category;
 	
+	/**0:未同步 1:已同步*/
 	private Integer syncState;
 	
 	private LocalDateTime syncTime;
 	
+	private Integer accountNum;
 	
+	private Integer bandWidth;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private Integer diskSpace;
 	
 	
 	

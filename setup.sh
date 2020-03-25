@@ -41,9 +41,15 @@ echo ${REGISTRY_PASSWORD:-"woms0613"} | docker login $IMAGE_REGISTRY -u $REGISTR
 docker push $IMAGE_FULLNAME
 
 
-echo " ================== 镜像推送完成 ================== "
+echo " ================== 镜像推送完成 ================== ";sleep 3
 
+## =====================================================================
 
+echo " ========================== 删除本地none镜像"
+
+docker rmi $(docker images | grep "none" | awk '{print $3}')
+docker rmi $IMAGE_FULLNAME
+echo " ============================ 本地镜像删除完成" 
 
 
 
