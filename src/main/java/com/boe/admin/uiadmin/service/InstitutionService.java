@@ -1,6 +1,7 @@
 package com.boe.admin.uiadmin.service;
 
 import static com.boe.admin.uiadmin.common.Result.of;
+import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -210,6 +212,15 @@ public class InstitutionService {
 		
 		institutionMapper.updateById(institutionPo);
 		return of(null, "更新成功", 200);
+	}
+
+
+	public Result<Object> getEnabledInstitutions() throws Exception {
+		QueryWrapper<InstitutionPo> queryWrapper = new QueryWrapper<>();
+		
+		queryWrapper.select("id", "name").lambda().ne(InstitutionPo::getState, StateEnum.DELETED);//排除删除
+		List<InstitutionPo> list = institutionMapper.selectList(queryWrapper);
+		return of(list, SUCCESS);
 	}
 
 }

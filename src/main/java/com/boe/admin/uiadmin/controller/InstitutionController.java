@@ -33,6 +33,11 @@ public class InstitutionController {
 	@Autowired
 	private InstitutionService institutionService;
 	
+	@GetMapping("getEnabledInstitutions")
+	public Result<Object> getEnabledInstitutions() throws Exception {
+		return institutionService.getEnabledInstitutions();
+	}
+	
 	@PutMapping("sync")
 	public Result<Object> syncInstitution(@RequestBody Long[] ids) throws Exception {
 		log.info(" === request body is : [{}]", Arrays.stream(ids).map(String::valueOf).collect(Collectors.joining(",")));

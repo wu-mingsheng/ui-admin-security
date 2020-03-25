@@ -1,0 +1,13 @@
+-- 授权表
+CREATE TABLE IF NOT EXISTS `authorization` (
+id bigint(11) NOT NULL AUTO_INCREMENT primary key COMMENT 'ID',
+creater_id bigint(11) NOT NULL default 0  COMMENT '创建人id',
+updater_id bigint(11) NOT NULL default 0  COMMENT '更新人id',
+state varchar(16) NOT NULL DEFAULT '' COMMENT 'DELETED,ENABLED,DISABLED',
+create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '开始时间',
+end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
+authorize_num INT NOT NULL DEFAULT 0 COMMENT '授权数量',
+institution_id INT NOT NULL DEFAULT 0 COMMENT '机构id'
+) engine=innodb AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4 COMMENT='授权表';
