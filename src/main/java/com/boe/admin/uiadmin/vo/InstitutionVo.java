@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import com.boe.admin.uiadmin.valid.group.AddInstitutionGroup;
 import com.boe.admin.uiadmin.valid.group.ListInistitutionGroup;
+import com.boe.admin.uiadmin.valid.group.UpdateInstitutionGroup;
 
 import lombok.Data;
 
@@ -20,17 +21,20 @@ public class InstitutionVo {
 	@Min(value = 1, message = "pageSize must > 1", groups = ListInistitutionGroup.class)
 	private Integer pageSize;
 	
-	@NotBlank(message = "name not null", groups = AddInstitutionGroup.class)
+	@NotNull(message = "id not null", groups = UpdateInstitutionGroup.class)
+	private Long id;
+	
+	@NotBlank(message = "name not null", groups = {AddInstitutionGroup.class, UpdateInstitutionGroup.class})
 	private String name;
-	@NotBlank(message = "category not null", groups = AddInstitutionGroup.class)
+	@NotBlank(message = "category not null", groups = {AddInstitutionGroup.class, UpdateInstitutionGroup.class})
 	private String category;
-	@NotBlank(message = "state not null", groups = AddInstitutionGroup.class)
+	@NotBlank(message = "state not null", groups = {AddInstitutionGroup.class, UpdateInstitutionGroup.class})
 	private String state;
-	@NotNull(message = "accountNum not null", groups = AddInstitutionGroup.class)
+	@NotNull(message = "accountNum not null", groups = {AddInstitutionGroup.class, UpdateInstitutionGroup.class})
 	private Integer accountNum;
-	@NotNull(message = "bandWidth not null", groups = AddInstitutionGroup.class)
+	@NotNull(message = "bandWidth not null", groups = {AddInstitutionGroup.class, UpdateInstitutionGroup.class})
 	private Integer bandWidth;
-	@NotNull(message = "diskSpace not null", groups = AddInstitutionGroup.class)
+	@NotNull(message = "diskSpace not null", groups = {AddInstitutionGroup.class, UpdateInstitutionGroup.class})
 	private Integer diskSpace;
 
 }

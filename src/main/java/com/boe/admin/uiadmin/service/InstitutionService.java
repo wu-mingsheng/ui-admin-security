@@ -172,4 +172,44 @@ public class InstitutionService {
 		return of(null, "同步成功", 200);
 	}
 
+
+	public Result<Object> getOne(Long id) throws Exception {
+		InstitutionPo institutionPo = institutionMapper.selectById(id);
+		return of(institutionPo, "获取成功", 200);
+	}
+
+
+	public Result<Object> updateInstitution(InstitutionVo institutionVo) throws Exception {
+		LambdaQueryWrapper<InstitutionPo> lambdaQuery = Wrappers.lambdaQuery();
+		lambdaQuery.eq(InstitutionPo::getName, institutionVo.getName())
+				   .ne(InstitutionPo::getId, institutionVo.getId());
+		List<InstitutionPo> list = institutionMapper.selectList(lambdaQuery);
+		if(list != null && list.size() > 0) {
+			return of(null, "机构名称已近存在", 400);
+		}
+		InstitutionPo institutionPo = institutionMapper.selectById(institutionVo.getId());
+		LocalDateTime now = DateUtil.now();
+		institutionPo.setName(institutionVo.getName());
+		institutionPo.setCategory(institutionVo.getCategory());
+		institutionPo.setAccountNum(institutionVo.getAccountNum());
+		institutionPo.setBandWidth(institutionVo.getBandWidth());
+		institutionPo.setDiskSpace(institutionVo.getDiskSpace());
+		institutionPo.setState(StateEnum.valueOf(institutionVo.getState()));
+		institutionPo.setSyncState(SyncStateEnum.NOT.value());
+		institutionPo.setSyncTime(now);
+		institutionPo.setUpdateTime(now);
+		institutionPo.setUpdaterId(UserUtil.getCurrentUserId());
+		institutionMapper.updateById(institutionPo);
+		//3. 同步到crm
+		//TODO
+		
+		//4. 跟新同步字段
+		
+		institutionPo.setSyncState(SyncStateEnum.HAS.value());
+		institutionPo.setSyncTime(DateUtil.now());
+		
+		institutionMapper.updateById(institutionPo);
+		return of(null, "更新成功", 200);
+	}
+
 }
