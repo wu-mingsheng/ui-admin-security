@@ -149,12 +149,11 @@ public class UserController {
     	String password = JsonCode.getValue(body, "$.password");
     	String roleId = JsonCode.getValue(body, "$.roleId");
     	Preconditions.checkState(!StringUtils.isAnyBlank(id, username, password, roleId), "请求参数有错误");
-    	UserVo userVo = UserVo.builder()
-    			.username(username)
-    			.password(password)
-    			.id(Long.parseLong(id))
-    			.roleId(Long.parseLong(roleId))
-    			.build();
+    	UserVo userVo = new UserVo();
+    	userVo.setId(Long.parseLong(id));
+    	userVo.setPassword(password);
+    	userVo.setUsername(username);
+    	userVo.setRoleId(Long.parseLong(roleId));
     	return userService.updateUser(userVo);
     	
     }
