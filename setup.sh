@@ -48,8 +48,8 @@ echo " ================== 镜像推送完成 ================== ";sleep 3
 echo " ========================== 删除本地none镜像"
 
 docker rmi $(docker images | grep "none" | awk '{print $3}')
-docker rmi $IMAGE_FULLNAME
-echo " ============================ 本地镜像删除完成" 
+# docker rmi $IMAGE_FULLNAME
+echo " ============================ 本地none镜像删除完成"
 
 
 
