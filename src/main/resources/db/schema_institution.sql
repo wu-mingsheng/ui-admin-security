@@ -14,3 +14,13 @@ account_num INT NOT NULL DEFAULT 0 COMMENT '人数',
 band_width INT NOT NULL DEFAULT 0 COMMENT '带宽',
 disk_space INT NOT NULL DEFAULT 0 COMMENT '空间'
 ) engine=innodb AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4 COMMENT='机构表';
+
+
+
+
+
+
+
+
+
+

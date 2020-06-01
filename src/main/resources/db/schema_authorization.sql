@@ -11,3 +11,13 @@ end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
 authorize_num INT NOT NULL DEFAULT 0 COMMENT '授权数量',
 institution_id INT NOT NULL DEFAULT 0 COMMENT '机构id'
 ) engine=innodb AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4 COMMENT='授权表';
+
+
+
+
+
+
+
+
+
+
