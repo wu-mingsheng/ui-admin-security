@@ -1,13 +1,5 @@
 package com.boe.admin.uiadmin.security;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.boe.admin.uiadmin.dao.RoleMapper;
@@ -17,8 +9,14 @@ import com.boe.admin.uiadmin.po.RolePo;
 import com.boe.admin.uiadmin.po.UserPo;
 import com.boe.admin.uiadmin.po.UserRolePo;
 import com.google.common.collect.Lists;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 /**
  * 
  * Service 层需要实现 UserDetailsService 接口，该接口是根据用户名获取该用户的所有信息， 包括用户信息和权限点。
@@ -26,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-//@CacheConfig(cacheNames = {"userCache"})
 public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
@@ -37,8 +34,6 @@ public class MyUserDetailsService implements UserDetailsService {
 	private UserRoleMapper userRoleMapper;
 
 	@Override
-	//unless = "#result == null || #result.size() <= 0"
-	//@Cacheable(key="#username",  unless="#result == null")
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("=== [username:{}]", username);
 		// 查数据库

@@ -1,11 +1,8 @@
 package com.boe.admin.uiadmin.error;
 
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
+import com.boe.admin.uiadmin.common.Result;
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
@@ -20,10 +17,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.boe.admin.uiadmin.common.Result;
-
-import io.jsonwebtoken.ExpiredJwtException;
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.Set;
 
 @RestControllerAdvice
 @Slf4j
@@ -126,7 +123,7 @@ public class ExceptionAdviceHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public Result<Object> throwable(HttpServletRequest request, Throwable e) {
-		log.error("###################>>>>>>>: Throwable -- {}", ExceptionUtils.getMessage(e));
+		log.error(ExceptionUtils.getMessage(e), e);
 		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
 
 		return Result.of(null, e.getMessage(), statusCode == null ? 500 : statusCode);
