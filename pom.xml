@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.5.RELEASE</version>
+		<version>2.3.0.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.boe.admin</groupId>
 	<artifactId>ui-admin-security</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>ui-admin</name>
 	<description>CRM Admin</description>
 
@@ -22,8 +22,8 @@
 
 
 
-		<spring-framework-bom.version>5.2.4.RELEASE</spring-framework-bom.version>
-		<spring-boot-dependencies.version>2.2.5.RELEASE</spring-boot-dependencies.version>
+		<spring-framework-bom.version>5.2.6.RELEASE</spring-framework-bom.version>
+		<spring-boot-dependencies.version>2.3.0.RELEASE</spring-boot-dependencies.version>
 		<platform-bom.version>Cairo-SR8</platform-bom.version>
 
 
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>3.3.0</version>
+			<version>3.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -166,6 +166,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<layout>LAYERED_JAR</layout>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

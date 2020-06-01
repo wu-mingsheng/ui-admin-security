@@ -1,8 +1,6 @@
 package com.boe.admin.uiadmin.po;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,8 +9,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class UserRolePo extends BasePo{
 	
-	@TableId
-	private Long id;
+
 	
 	private Long userId;
 	

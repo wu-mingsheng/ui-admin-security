@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 public enum RoleEnum {
 	
-	ADMIN("系统管理员", "admin", 0), NORMAL("普通用户", "view", 1);
+	ADMIN("系统管理员", "admin", 0),
+
+	NORMAL("普通用户", "view", 1);
 	
 	private String roleDesc;
 	

@@ -1,12 +1,12 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.5.RELEASE'
+	id 'org.springframework.boot' version '2.3.0.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
 }
 
 group = 'com.boe.admin'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+version = '0.0.1'
+sourceCompatibility = '11'
 
 configurations {
 	compileOnly {
@@ -17,8 +17,8 @@ configurations {
 dependencyManagement {
   imports {
     mavenBom 'io.spring.platform:platform-bom:Cairo-SR8'
-    mavenBom 'org.springframework:spring-framework-bom:5.2.4.RELEASE'
-    mavenBom 'org.springframework.boot:spring-boot-dependencies:2.2.5.RELEASE'
+    mavenBom 'org.springframework:spring-framework-bom:5.2.6.RELEASE'
+    mavenBom 'org.springframework.boot:spring-boot-dependencies:2.3.0.RELEASE'
   }
 }
 
@@ -26,24 +26,24 @@ repositories {
 	mavenCentral()
 }
 
+bootJar {
+    layered()
+}
+
 
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
-	implementation 'com.baomidou:mybatis-plus-boot-starter:3.3.0'
+	implementation 'com.baomidou:mybatis-plus-boot-starter:3.3.1'
 	runtimeOnly 'mysql:mysql-connector-java'
 	
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 	
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	
-	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	implementation 'net.sf.ehcache:ehcache'
 	
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
