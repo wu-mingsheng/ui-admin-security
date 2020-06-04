@@ -1,24 +1,5 @@
 package com.boe.admin.uiadmin.service;
 
-import static com.boe.admin.uiadmin.enums.ResultCodeEnum.ILLEGAL_TOKEN;
-import static com.boe.admin.uiadmin.enums.ResultCodeEnum.SUCCESS;
-import static com.boe.admin.uiadmin.enums.ResultCodeEnum.TOKEN_EXPIRED;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.boe.admin.uiadmin.common.Result;
@@ -34,6 +15,22 @@ import com.boe.admin.uiadmin.security.JwtTokenUtil;
 import com.boe.admin.uiadmin.security.User;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.boe.admin.uiadmin.enums.ResultCodeEnum.*;
 
 @Service
 public class LoginService {
@@ -61,7 +58,6 @@ public class LoginService {
     
     @Autowired
     private RoleMapper roleMapper;
-
 
     /**
      * {@link com.boe.admin.uiadmin.security.MyUserDetailsService #loadUserByUsername}

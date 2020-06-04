@@ -50,7 +50,7 @@ RUN java -Djarmode=layertools -jar application.jar extract
 FROM adoptopenjdk:11-jre-hotspot
 ENV PROFILE=default
 ENV TZ=Asia/Shanghai
-ENV JAVA_OPTS="-Xms1g -Xmx1g"
+ENV JAVA_OPTS="-Xms1g -Xmx1g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=."
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR application
 COPY --from=builder application/dependencies/ ./
