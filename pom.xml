@@ -22,7 +22,7 @@
 
 
 
-		<spring-framework-bom.version>5.2.6.RELEASE</spring-framework-bom.version>
+		<spring-framework-bom.version>5.2.9.RELEASE</spring-framework-bom.version>
 		<spring-boot-dependencies.version>2.3.0.RELEASE</spring-boot-dependencies.version>
 		<platform-bom.version>Cairo-SR8</platform-bom.version>
 
